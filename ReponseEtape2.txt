@@ -1,0 +1,144 @@
+Partie II. Entrées-sorties asynchrones
+
+C’est une erreur que de chercher à lire un caractère avant d’être averti qu’un caractère est disponible, ou de
+chercher à écrire avant d’être averti que l’écriture précédente est terminée. Expliquez pourquoi.
+
+Il s'agit du fait que c'est asynchrones : exécution puis attende de réponse Notification ensuite fait; Attende de finition
+"
+C’est une erreur que de chercher à lire un caractère avant d’être averti qu’un caractère est disponible, ou de
+chercher à écrire avant d’être averti que l’écriture précédente est terminée. Expliquez pourquoi.
+"
+
+d'apres TORCK
+Action II.1
+	interprétation : lorsque nous ecrivons une chaine de caractère, elle est renvoyé sur la sortie standard. 
+
+Action II.2.
+  #ifdef CHANGED
+	  if (ch == 'q'){
+	  	return;		// if q, quit
+	  }	 
+      else if (ch == EOF){
+      	return;
+      }
+		#endif // CHANGED    
+	      
+      }
+      
+Action II.3.
+if(ch != '\n'){
+	  	 console->PutChar('<');
+	 	 writeDone->P ();	// wait for write to finish
+	  	console->PutChar (ch);	// echo it!
+	  	writeDone->P ();	// wait for write to finish
+	  	console->PutChar('>');
+	  	writeDone->P ();	// wait for write to finish
+	  }
+
+Action IV.1.
+#ifdef CHANGED
+#define SC_PutChar 	11
+#endif // CHANGED
+
+Action IV.2.
+
+#ifdef CHANGED	
+	.globl PutChar
+	.ent	PutChar
+PutChar:
+	addiu $2,$0,SC_PutChar
+	syscall
+	j	$31
+	.end PutChar
+#endif // CHANGED
+	
+	
+Action IV.3.
+case SC_PutChar: {
+				//interrupt->PutChar((char)c));
+				int c = machine->ReadRegister(4);
+				 synchconsole->SynchPutChar((char)c);
+				break;
+			}
+			
+le c sert charhcher dans le registe 4 et affche
+
+
+Action IV.4.
+#ifdef CHANGED
+     /*
+    Etape 2, Action IV.4, initialisation de la console asynchrone
+    */
+        if(!format) // si le formatage du disque dur est demandée, on supprime la console pour ne pas bloquer l'exécution
+    	   synchconsole = new SynchConsole(NULL,NULL);
+    #endif //CHANGED
+    
+    
+    
+    
+Action V.1
+La première chose à faire est de passer d'un pointeur mips à un pointeur Linux. Pour cela on met en
+CopyStringFromMachine
+place la méthode
+
+MEMO EXPLIQUER:
+Dire pourquoi methode copyfromMachine et copyFromString SOnt dans exception.CC
+
+SynchConsole . On a choisit de placer
+cette méthode dans cette classe car elle sera spéciquement utiliser dans le cas de gestion des strings qui sont
+essentiellements gérés dans cette classe.
+
+
+Action V.2.
+Dans synchconsole.cc
+Expliquer semaphore
+void SynchConsole::SynchPutString(const char s[])
+{
+	writeString->P(); // Semaphore mutex 
+	int i = 0;
+	while(*(s+i)!='\0'){
+		SynchPutChar(*(s+i));
+		i++;
+	}
+	writeString->V();// Libértion
+ 
+Ajout du MAX_STRING_SIZE dans system.h
+
+Action V.3
+Creation d'un nouvell appel system donc modif du fichier syscall et 
+start.S ajout du handle dans exception.cc
+
+case SC_PutString:{
+            int c = machine->ReadRegister(4); // registre contenant le parametre de la fonction appelée
+            char st[MAX_STRING_SIZE];
+            synchconsole->CopyStringFromMachine(c,st,MAX_STRING_SIZE);
+            synchconsole->SynchPutString(st);
+            
+            
+            break;
+          }
+          
+
+Action VI 
+Fait par TORCK
+          
+ Action VII
+Meme chose que putstring
+
+Action VII.1
+Modif des fichier SynchConsole, syscall, start.S
+
+void SynchConsole::SynchGetString(char *s, int n)
+{
+	//Principe des semaphore pour avoir acces à la console
+	readChar->P(); 
+
+	readAvail->P();
+	char c = console->GetChar();
+
+	readChar->V();
+	return c;
+}
+
+
+

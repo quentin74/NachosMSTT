@@ -1,0 +1,99 @@
+2.3
+
+Lisez le code de la fonction Machine::Run, rep ́erez la fonction qui ex ́ecute une instruction
+MIPS.
+
+	Lit ligne par ligne les instructions et fait l'operation du type de l'intruction
+		ex : une additon : add r1 r21 R3  
+				va etre executer OneInstruction(instr);
+				 case OP_ADD:
+					sum = registers[instr->rs] + registers[instr->rt];
+					
+3.1
+ executer un programme : ./nachos-userprog -x ./halt
+ 
+ Trace d'un programme : ./nachos-userprog -d m -x ./halt
+								./nachos-userprog -rs 0 -d m -x ./halt
+								
+								
+								
+Ajoutez le lancement d’un thread suppl ́ementaire dans la fonction ThreadTest(). Il
+marche toujours ? OUI				
+								
+  Thread *t = new Thread ("forked thread");
+    Thread *t2 = new Thread ("added thread");
+    t->Fork (SimpleThread, 1);
+    t2->Fork (SimpleThread,2);
+    SimpleThread (0);
+    
+    
+*** thread 0 looped 0 times
+*** thread 1 looped 0 times
+*** thread 2 looped 0 times
+
+La s ́emantique de la m ́ethode fork de l’objet thread n’a rien a ` voir avec celle de la fonction
+` quel moment les threads NachOS sont-
+Unix fork. Que fait la m ́ethode fork dans NachOS ?
+
+Le thread se transforme en un thread qui peut etre executer et commuter par le processeur
+
+Implemented as the following steps:
+//              1. Allocate a stack
+//              2. Initialize the stack so that a call to SWITCH will
+//              cause it to run the procedure
+//              3. Put the thread on the ready queue
+//      
+//      "func" is the procedure to run concurrently.
+//      "arg" is a single argument to be passed to the procedure.
+
+
+Maintenant, commentez la ligne suivante :
+currentThread->Yield();
+
+thread 0 looped 0 times
+*** thread 0 looped 1 times
+*** thread 0 looped 2 times
+*** thread 0 looped 3 times
+*** thread 0 looped 4 times
+*** thread 1 looped 0 times
+*** thread 1 looped 1 times
+*** thread 1 looped 2 times
+*** thread 1 looped 3 times
+*** thread 1 looped 4 times
+*** thread 2 looped 0 times
+*** thread 2 looped 1 times
+*** thread 2 looped 2 times
+*** thread 2 looped 3 times
+*** thread 2 looped 4 times
+
+
+pas de commutation entre les thread
+    
+Recompilez (make) et examinez ce qui se passe. Qu’en d ́eduisez-vous pour la pr ́eemption
+des threads syst`emes par d ́efaut ?
+Je vois un ordre fifo pas de priorité
+
+
+3.3 Decouverte de l’ordonnanceur
+Que se passe-t-il exactement lors d’un appel a ` la fonction Yield() ?
+
+EASY TO EXPLAIN
+
+ 	Thread *nextThread; @@ Déclaration d'un thread
+    IntStatus oldLevel = interrupt->SetLevel (IntOff); @@ Bloquage des interruption
+
+    ASSERT (this == currentThread); @@ verifie si this  est égal au thread current
+
+    DEBUG ('t', "Yielding thread \"%s\"\n", getName ());
+
+    nextThread = scheduler->FindNextToRun (); @@ met le thread dans nextThread fifo
+    if (nextThread != NULL)
+      {
+	  scheduler->ReadyToRun (this); @@ Change son statu et le met dans la readyList
+	  scheduler->Run (nextThread); @@ exécute le nextThread
+      }
+    (void) interrupt->SetLevel (oldLevel); @@ remet les interruption
+								
+
+A quel moment un thread ressort-il de cette fonction ?
+Lorque les interruption son remis

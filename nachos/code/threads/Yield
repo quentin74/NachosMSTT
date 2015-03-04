@@ -1,0 +1,19 @@
+./main.cc:    currentThread->Finish ();	// NOTE: if the procedure "main" 
+./scheduler.cc:    if (currentThread->space != NULL)
+./scheduler.cc:	  currentThread->SaveUserState ();	// save the user's CPU registers
+./scheduler.cc:	  currentThread->space->SaveState ();
+./scheduler.cc:    currentThread->setStatus (RUNNING);	// nextThread is now running
+./scheduler.cc:    DEBUG ('t', "Now in thread \"%s\"\n", currentThread->getName ());
+./scheduler.cc:    if (currentThread->space != NULL)
+./scheduler.cc:	  currentThread->RestoreUserState ();	// to restore, do it.
+./scheduler.cc:	  currentThread->space->RestoreState ();
+./synch.cc:	  currentThread->Sleep ();
+./system.cc:    currentThread->setStatus (RUNNING);
+./thread.cc:    // LB: Observe that currentThread->space may be NULL at that time.
+./thread.cc:    this->space = currentThread->space;
+./thread.cc:    currentThread->Finish ();
+./thread.cc:  if (currentThread->space != NULL)
+./thread.cc:      currentThread->RestoreUserState ();	// to restore, do it.
+./thread.cc:      currentThread->space->RestoreState ();
+./threadtest.cc:	  currentThread->Yield ();
+./threadtest.cc~:	  currentThread->Yield ();
