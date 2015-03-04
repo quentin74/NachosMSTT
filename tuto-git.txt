@@ -1,0 +1,11 @@
+Salut les gars :
+
+Pour git la premiere chose a faire est de faire un git clone le nom de mon projet.
+
+ensuite des que tu modifie un fichier tu fais git status tout d'abord pour savoir si c est en vert tu dois juste faire un push.
+si c est en rouge soi tu dois ajouter le fichier en faisant git add " le nom de ton fichier" puis tu fais un git commit -m "le nom de ta modification" sinon tu as juste un commit a faire.
+
+a chaque moment que tu reprend ton projet fais un git pull pour récupérer les modifications effectuées par les autres.
+
+
+à chaque nouvelle étape il serait bien d'ajouter une nouvelle branche ( pour cela je ne sais pas encore comment on fait .)
